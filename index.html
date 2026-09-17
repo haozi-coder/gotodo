@@ -22,9 +22,20 @@
     <h2>📊任务总览</h2>
     <div>当前登录用户：<span id="showUser"></span> <button id="logoutBtn">退出登录</button></div>
     <div id="stat-box"></div>
-    <br>
-    <h3>最近任务</h3>
-    <div id="recent-todo"></div>
+        <br>
+        <h3>➕快速新增任务</h3>
+        <form id="indexAddForm">
+          <input type="text" id="idxTitle" placeholder="任务标题(必填，3-20字符)">
+          <div class="err-msg" id="idxTitleErr"></div>
+
+          <textarea id="idxContent" placeholder="任务描述，最多100字"></textarea>
+          <div class="err-msg" id="idxContentErr"></div>
+
+          <button type="submit">新增任务</button>
+        </form>
+        <br>
+        <h3>最近任务</h3>
+        <div id="recent-todo"></div>
   </section>
 </main>
 
