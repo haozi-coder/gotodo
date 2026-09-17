@@ -50,7 +50,7 @@ if(getCurrentUser()){
 }
 
 // 登录
-document.querySelector("#loginForm").onsubmit = function(e){
+document.querySelector("#loginForm").onsubmit = async function(e){
   e.preventDefault()
   const u = document.querySelector('#username').value.trim()
   const p = document.querySelector('#pwd').value.trim()
@@ -64,7 +64,7 @@ document.querySelector("#loginForm").onsubmit = function(e){
 }
 
 //注册
-document.querySelector("#regForm").onsubmit = function(e){
+document.querySelector("#regForm").onsubmit = async function(e){
   e.preventDefault()
   const u = document.querySelector('#regUser').value.trim()
   const p = document.querySelector('#regPwd').value.trim()
