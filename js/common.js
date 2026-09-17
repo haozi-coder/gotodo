@@ -58,6 +58,14 @@ export function generateTodoId() {
   return Date.now() + Math.floor(Math.random() * 1000)
 }
 
+// ========== 统一日期格式 YYYY-MM-DD（与 data.json 示例数据保持一致） ==========
+export function formatDate(d = new Date()) {
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
 // ========== 组装一条新任务，首页/列表页复用，字段保持一致 ==========
 export function createTodo(title, content) {
   return {
@@ -65,7 +73,7 @@ export function createTodo(title, content) {
     title,
     content,
     done: false,
-    createTime: new Date().toLocaleDateString()
+    createTime: formatDate()
   }
 }
 
