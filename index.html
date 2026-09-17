@@ -24,13 +24,22 @@
     </div>
 
     <section class="stat">
-      <!-- 左侧：统计侧边栏 -->
+      <!-- 左侧：统计侧边栏（两个卡片） -->
       <aside id="stat-aside">
-        <div id="stat-box"></div>
-        <div class="chart-area">
-          <canvas id="statChart" width="140" height="140"></canvas>
+        <!-- 第一个统计卡片：待完成总数 + 今日完成 -->
+        <div class="stat-card">
+          <div class="stat-big-num" id="totalCount">0</div>
+          <div class="stat-label">全部待完成（项）</div>
+          <div class="stat-sub">今日完成：<span id="todayDoneCount">0</span> 项</div>
         </div>
-        <img src="./images/chart-illustration.svg" loading="lazy" alt="任务示意图" class="lazy-img">
+
+        <!-- 第二个统计卡片：今日到期环形图 -->
+        <div class="stat-card">
+          <div class="chart-area">
+            <canvas id="statChart" width="120" height="120"></canvas>
+          </div>
+          <div class="stat-label">今日到期</div>
+        </div>
       </aside>
 
       <!-- 右侧：主内容区 -->

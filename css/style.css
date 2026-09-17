@@ -294,34 +294,47 @@ button:active{
   font-size: 0.95rem;
 }
 
-/* ========== 首页统计侧边栏 ========== */
+/* ========== 首页统计侧边栏（两个卡片） ========== */
 #stat-aside{
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.stat-card{
   background: var(--card-bg);
-  border: none;
-  border-top: 3px solid var(--primary);
-  padding: 16px;
-  margin: 12px 0;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
+  padding: 20px;
+  text-align: center;
 }
-#stat-aside p{
-  margin: 6px 0;
-  font-size: 0.95rem;
+.stat-big-num{
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.2;
+}
+.stat-label{
+  font-size: 0.85rem;
+  color: var(--text-light);
+  margin-top: 4px;
+}
+.stat-sub{
+  font-size: 0.85rem;
+  color: var(--text-light);
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #f0f0f0;
+}
+.stat-sub strong{
+  color: var(--success);
 }
 .chart-area{
   display: flex;
   justify-content: center;
-  margin: 12px 0;
+  margin: 4px 0;
 }
 .chart-area canvas{
-  max-width: 140px;
-}
-.lazy-img{
-  display: block;
-  margin: 8px auto;
-  border-radius: 8px;
-  max-width: 100px;
-  opacity: 0.9;
+  max-width: 120px;
 }
 
 /* ========== FAB 浮动 + 号按钮 ========== */

@@ -278,6 +278,21 @@ export function saveTodoList(arr) {
   localStorage.setItem(key, JSON.stringify(arr))
 }
 
+// ========== 今日完成任务计数（按天存储，跨天自动清零） ==========
+function getTodayDoneKey() {
+  return "todayDone_" + formatDate()
+}
+// 获取今日完成任务数
+export function getTodayDoneCount() {
+  return parseInt(localStorage.getItem(getTodayDoneKey()) || '0', 10)
+}
+// 今日完成数 +1
+export function incrementTodayDone() {
+  const key = getTodayDoneKey()
+  const n = getTodayDoneCount()
+  localStorage.setItem(key, String(n + 1))
+}
+
 // 判断该用户是否已经加载过示例数据
 export function isUserHasInitData(userName){
   if(!userName) return false // 未登录时不要共用 user_initLoaded_null 这个键

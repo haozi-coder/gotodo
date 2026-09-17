@@ -1,5 +1,6 @@
 import {renderHeader, renderFooter, getTodoList, getCurrentUser, addTodo, completeTodo, delTodo,
-        isTipShown, setTipShown, logout, escapeHtml, validateTodo, createTodo, formatDate} from './common.js'
+        isTipShown, setTipShown, logout, escapeHtml, validateTodo, createTodo, formatDate,
+        getTodayDoneCount, incrementTodayDone} from './common.js'
 
 // ========= 未登录直接跳登录页 =========
 const currentUser = getCurrentUser()
@@ -94,14 +95,13 @@ function renderHome() {
   const total = list.length
   const today = formatDate()
   const todayDue = list.filter(i => i.dueTime === today).length
+  const todayDone = getTodayDoneCount()
 
-  // 统计信息
-  document.querySelector('#stat-box').innerHTML = `
-    <p>📋待完成任务：<strong>${total}</strong> 项</p>
-    <p>⏰今日到期：<strong style="color:#fa8c16">${todayDue}</strong> 项</p>
-  `
+  // 第一个统计卡片：待完成总数 + 今日完成
+  document.querySelector('#totalCount').textContent = total
+  document.querySelector('#todayDoneCount').textContent = todayDone
 
-  // Canvas 环形图
+  // Canvas 环形图：今日到期占比
   drawPieChart(document.querySelector('#statChart'), todayDue, total)
 
   // 待完成任务列表
@@ -134,9 +134,10 @@ function renderHome() {
     </div>
   `).join('')
 
-  // 完成按钮：直接删除任务（已完成自动消失）
+  // 完成按钮：今日完成数+1，然后直接删除任务
   document.querySelectorAll('.complete-btn').forEach(btn => {
     btn.onclick = function() {
+      incrementTodayDone()
       completeTodo(this.dataset.id)
       renderHome()
     }
