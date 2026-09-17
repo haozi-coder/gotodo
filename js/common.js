@@ -67,3 +67,101 @@ export function editTodo(id, newData) {
     saveTodoList(list)
   }
 }
+// ===================== 登录、弹窗、用户隔离逻辑 =====================
+// 是否看过欢迎提示
+export function isTipShown() {
+  return localStorage.getItem('hasShowTip') === 'true'
+}
+export function setTipShown() {
+  localStorage.setItem('hasShowTip', 'true')
+}
+
+// 用户账号相关
+const USER_LIST_KEY = "userList"
+const CURRENT_USER_KEY = "currentUser"
+
+// 获取全部注册用户
+export function getUserList() {
+  const str = localStorage.getItem(USER_LIST_KEY)
+  return str ? JSON.parse(str) : []
+}
+
+// 注册用户
+export function registerUser(username, password) {
+  const users = getUserList()
+  const exist = users.find(u => u.username === username)
+  if(exist) return false //账号已存在
+  users.push({username, password})
+  localStorage.setItem(USER_LIST_KEY, JSON.stringify(users))
+  return true
+}
+
+// 登录校验
+export function loginUser(username, password) {
+  const users = getUserList()
+  const u = users.find(item=> item.username === username && item.password === password)
+  if(u){
+    localStorage.setItem(CURRENT_USER_KEY, username)
+    return true
+  }
+  return false
+}
+
+// 获取当前登录用户
+export function getCurrentUser(){
+  return localStorage.getItem(CURRENT_USER_KEY)
+}
+
+// 退出登录
+export function logout(){
+  localStorage.removeItem(CURRENT_USER_KEY)
+}
+
+// 获取当前用户的存储key
+function getUserTodoKey(username){
+  return "user_todo_" + username
+}
+function getUserInitFlagKey(username){
+  return "user_initLoaded_" + username
+}
+
+// =========重写待办读写，按用户隔离（替换原来的全局todo）=========
+// 获取当前用户待办
+export function getTodoList() {
+  const user = getCurrentUser()
+  if(!user) return []
+  const key = getUserTodoKey(user)
+  const str = localStorage.getItem(key)
+  return str ? JSON.parse(str) : []
+}
+
+export function saveTodoList(arr) {
+  const user = getCurrentUser()
+  if(!user) return
+  const key = getUserTodoKey(user)
+  localStorage.setItem(key, JSON.stringify(arr))
+}
+
+// 判断该用户是否已经加载过示例数据
+export function isUserHasInitData(userName){
+  return localStorage.getItem(getUserInitFlagKey(userName)) === "true"
+}
+// 设置标记：该用户已经加载过示例，以后不再生成
+export function markUserInitLoaded(userName){
+  localStorage.setItem(getUserInitFlagKey(userName), "true")
+}
+
+// 给新用户生成示例任务（只执行1次）
+export function createInitTodoForNewUser(){
+  const user = getCurrentUser()
+  if(!user) return
+  if(isUserHasInitData(user)) return; //已经加载过，直接返回，不再生成
+
+  // 示例测试任务
+  const initData = [
+    {id:1, title:"欢迎使用待办清单", content:"这是系统给你的示例任务，可以直接删除", done:false, createTime:"2026‑09‑17"},
+    {id:2, title:"完成web课程作业", content:"完成待办综合项目", done:false, createTime:"2026‑09‑17"}
+  ]
+  saveTodoList(initData)
+  markUserInitLoaded(user) //打上标记！！！删除完以后刷新不会再出现
+}

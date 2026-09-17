@@ -9,14 +9,26 @@
 </head>
 <body>
   <main>
-    <section class="stat">
-      <h2>📊任务总览</h2>
-      <div id="stat-box"></div>
+  <!-- 首次访问欢迎弹窗 -->
+  <div id="welcomeModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:999;">
+    <div style="background:white;padding:24px;border-radius:10px;max-width:360px;">
+      <h3>👋欢迎使用待办清单系统</h3>
+      <p>每个账号拥有独立待办任务。系统会为新账号生成示例任务，删除后将不会再自动出现。</p>
       <br>
-      <h3>最近任务</h3>
-      <div id="recent-todo"></div>
-    </section>
-  </main>
+      <button id="closeTipBtn">知道了</button>
+    </div>
+  </div>
+
+  <section class="stat">
+    <h2>📊任务总览</h2>
+    <div>当前登录用户：<span id="showUser"></span> <button id="logoutBtn">退出登录</button></div>
+    <div id="stat-box"></div>
+    <br>
+    <h3>最近任务</h3>
+    <div id="recent-todo"></div>
+  </section>
+</main>
+
 
   <!-- type="module" 才支持import导出 -->
   <script type="module" src="./js/common.js"></script>

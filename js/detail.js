@@ -1,4 +1,7 @@
 import {renderHeader, renderFooter, getTodoById, editTodo} from './common.js'
+import {getCurrentUser} from './common.js'
+//没有登录跳登录页面
+if(!getCurrentUser()) location.href="./login.html"
 renderHeader()
 renderFooter()
 
