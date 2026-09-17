@@ -402,6 +402,7 @@ h3{
   }
   #stat-aside{
     margin: 0;
+    margin-top: 48px; /* 往下偏移，和右侧表单卡片顶部对齐 */
     position: sticky;
     top: 80px;
   }
