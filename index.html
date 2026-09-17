@@ -25,6 +25,12 @@
     <!-- 侧边辅助信息：任务统计概览 -->
     <aside id="stat-aside">
       <div id="stat-box"></div>
+      <!-- Canvas 环形图：任务完成率可视化 -->
+      <div class="chart-area">
+        <canvas id="statChart" width="140" height="140"></canvas>
+      </div>
+      <!-- 图片懒加载：loading="lazy"，滚动到可视区域才加载 -->
+      <img src="./images/chart-illustration.svg" loading="lazy" alt="任务完成率示意图" class="lazy-img">
     </aside>
 
     <br>

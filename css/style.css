@@ -103,6 +103,23 @@ input,textarea,button{
   margin:10px 0;
   border-radius:0 8px 8px 0;
 }
+/* Canvas 图表居中 */
+.chart-area{
+  display:flex;
+  justify-content:center;
+  margin:10px 0;
+}
+.chart-area canvas{
+  max-width:140px;
+}
+/* 懒加载图片：居中、圆角、淡入效果 */
+.lazy-img{
+  display:block;
+  margin:8px auto;
+  border-radius:8px;
+  max-width:120px;
+  opacity:0.9;
+}
 
 /* ========= 响应式媒体查询 ========= */
 /* 手机 <768px：单列 */

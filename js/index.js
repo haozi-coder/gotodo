@@ -7,6 +7,76 @@ const currentUser = getCurrentUser()
 let modal = null
 
 // ========= 渲染统计 + 最近任务（可点击完成） =========
+// ========= Canvas 绘制任务完成率环形图 =========
+function drawPieChart(canvas, done, total) {
+  if (!canvas) return
+  const ctx = canvas.getContext('2d')
+  const cx = canvas.width / 2
+  const cy = canvas.height / 2
+  const radius = 56
+  const innerRadius = 36 // 环形图内径
+
+  // 清空画布
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+  // 无任务：画灰色空心圆 + 文字
+  if (total === 0) {
+    ctx.beginPath()
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2)
+    ctx.fillStyle = '#e8e8e8'
+    ctx.fill()
+    ctx.beginPath()
+    ctx.arc(cx, cy, innerRadius, 0, Math.PI * 2)
+    ctx.fillStyle = '#f0f4f8'
+    ctx.fill()
+    ctx.fillStyle = '#999'
+    ctx.font = '13px system-ui'
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText('暂无任务', cx, cy)
+    return
+  }
+
+  const doneRatio = done / total
+  const undoneRatio = 1 - doneRatio
+  const startAngle = -Math.PI / 2 // 从12点钟方向开始
+
+  // 未完成部分（浅红）
+  ctx.beginPath()
+  ctx.moveTo(cx, cy)
+  ctx.arc(cx, cy, radius, startAngle, startAngle + undoneRatio * Math.PI * 2)
+  ctx.closePath()
+  ctx.fillStyle = '#ffb3b3'
+  ctx.fill()
+
+  // 已完成部分（浅绿）
+  if (doneRatio > 0) {
+    ctx.beginPath()
+    ctx.moveTo(cx, cy)
+    ctx.arc(cx, cy, radius, startAngle + undoneRatio * Math.PI * 2, startAngle + Math.PI * 2)
+    ctx.closePath()
+    ctx.fillStyle = '#9bd99b'
+    ctx.fill()
+  }
+
+  // 中间挖白（环形效果）
+  ctx.beginPath()
+  ctx.arc(cx, cy, innerRadius, 0, Math.PI * 2)
+  ctx.fillStyle = '#f0f4f8'
+  ctx.fill()
+
+  // 中间百分比文字
+  const percent = Math.round(doneRatio * 100)
+  ctx.fillStyle = '#2c3e50'
+  ctx.font = 'bold 18px system-ui'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.fillText(percent + '%', cx, cy - 6)
+  ctx.font = '11px system-ui'
+  ctx.fillStyle = '#666'
+  ctx.fillText('完成率', cx, cy + 12)
+}
+
 function renderHome(){
   const list = getTodoList()
   const total = list.length
@@ -18,6 +88,9 @@ function renderHome(){
     <p>已完成：${doneNum}</p>
     <p>未完成：${undoneNum}</p>
   `
+
+  // 绘制 Canvas 环形图
+  drawPieChart(document.querySelector('#statChart'), doneNum, total)
 
   // 展示前3条最近任务
   const recent = list.slice(-3)

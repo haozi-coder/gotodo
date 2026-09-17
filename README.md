@@ -4,9 +4,11 @@
 原生 HTML + CSS + ES6 JavaScript 实现的移动端优先响应式待办清单系统。纯前端项目，无构建工具、无第三方依赖，浏览器直接运行。
 
 ## 技术栈
-- HTML5 语义化标签：`header` / `nav` / `main` / `section` / `footer`
+- HTML5 语义化标签：`header` / `nav` / `main` / `section` / `article` / `aside` / `footer`
 - CSS3：Flex + Grid 响应式布局，媒体查询断点 768px
 - 原生 JavaScript（ES6+）：ES Module 模块化、async/await、Fetch API
+- HTML5 Canvas API：任务完成率环形图可视化
+- HTML 图片懒加载：`loading="lazy"` 属性
 - Web Storage（localStorage）数据持久化
 - Web Crypto API：SHA-256 加盐哈希（密码演示级加密）
 
@@ -22,8 +24,10 @@
 
 ### 提高选做功能
 1. LocalStorage 持久化存储，刷新页面数据不丢失
-2. Fetch 读取本地 `data.json` 加载初始示例数据（仅新用户首次登录）
-3. 用户注册/登录，待办数据按用户隔离存储
+2. Canvas 绘制任务完成率环形图（实时统计可视化）
+3. 图片懒加载：`loading="lazy"`，滚动到可视区域才加载图片
+4. Fetch 读取本地 `data.json` 加载初始示例数据（仅新用户首次登录）
+5. 用户注册/登录，待办数据按用户隔离存储
 
 ### 安全与健壮性改进
 1. 密码加盐哈希存储（SHA-256 + 随机盐），不再保存明文；旧版明文账号登录时自动迁移
@@ -71,17 +75,19 @@
 ## 目录结构
 ```
 gotodo/
-├── index.html        # 首页总览：统计、快速新增、最近任务
+├── index.html        # 首页总览：统计、Canvas环形图、快速新增、最近任务
 ├── list.html         # 全部任务：搜索、筛选、新增、删除
 ├── detail.html       # 任务详情：查看、编辑、删除
-├── login.html        # 登录 / 注册
+├── login.html        # 登录 / 注册（含手机号校验）
 ├── data.json         # 初始示例数据（新用户首次登录加载）
 ├── README.md
 ├── css/
 │   └── style.css     # 全局样式 + 响应式媒体查询
+├── images/
+│   └── chart-illustration.svg  # 示意图（懒加载演示）
 └── js/
     ├── common.js     # 公共模块：导航/页脚、校验、转义、存储、登录注册
-    ├── index.js      # 首页逻辑
+    ├── index.js      # 首页逻辑 + Canvas 环形图绘制
     ├── list.js       # 列表页逻辑
     └── detail.js     # 详情页逻辑
 ```
