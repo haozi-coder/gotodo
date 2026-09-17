@@ -17,10 +17,15 @@
       </div>
     </div>
 
-    <!-- 用户信息栏 -->
+    <!-- 用户信息栏：数据备份（下载/导入 JSON）+ 退出登录 -->
     <div class="user-bar">
       <span>👤 <span id="showUser"></span></span>
-      <button id="logoutBtn">退出登录</button>
+      <div class="user-actions">
+        <button id="exportBtn" class="data-btn" title="把当前账号的待办数据下载为 JSON 备份文件">📤 下载 JSON</button>
+        <button id="importBtn" class="data-btn" title="从 JSON 备份文件恢复当前账号的待办数据">📥 导入 JSON</button>
+        <input type="file" id="importFile" accept=".json,application/json" style="display:none;">
+        <button id="logoutBtn">退出登录</button>
+      </div>
     </div>
 
     <section class="stat">
