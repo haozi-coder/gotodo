@@ -8,18 +8,23 @@ if(!getCurrentUser()){
 renderHeader()
 renderFooter()
 
+// ========= 把弹窗和按钮事件提到window.onload外面 =========
+const modal = document.querySelector('#welcomeModal')
+const closeBtn = document.querySelector('#closeTipBtn')
+
+// 关闭按钮事件，提前绑定
+closeBtn.onclick = function(){
+  setTipShown()
+  modal.style.display="none"
+  console.log("已标记提示已读")
+}
+
 window.onload = function(){
-  //欢迎弹窗逻辑：只有第一次打开网页才显示
-  const modal = document.querySelector('#welcomeModal')
+  //判断是否展示弹窗
   if(isTipShown()){
     modal.style.display="none"
   }else{
     modal.style.display="flex"
-  }
-  //点击关闭，永久标记已读
-  document.querySelector('#closeTipBtn').onclick = function(){
-    setTipShown()
-    modal.style.display="none"
   }
 
   //展示用户名

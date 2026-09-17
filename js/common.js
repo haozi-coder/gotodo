@@ -26,18 +26,8 @@ export function renderFooter() {
 }
 
 // ========= LocalStorage 工具函数：待办数据持久化 =========
-const STORAGE_KEY = "todo_list"
-
-// 获取本地存储待办，如果为空返回默认空数组
-export function getTodoList() {
-  const str = localStorage.getItem(STORAGE_KEY)
-  return str ? JSON.parse(str) : []
-}
-
-// 保存数组到localStorage
-export function saveTodoList(arr) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(arr))
-}
+// 注意：getTodoList / saveTodoList 在下方「按用户隔离」处统一定义，
+// 此处不再重复导出，否则 ES Module 会报 Duplicate export 错误，导致整个模块加载失败。
 
 // 新增一条待办
 export function addTodo(todoObj) {
