@@ -19,10 +19,76 @@ export function renderHeader() {
 export function renderFooter() {
   const footerHtml = `
     <footer>
-      <p>校园综合项目｜待办清单系统 ©2026</p>
+            <p>校园综合项目｜待办清单系统 ©2026</p>
     </footer>
   `
   document.body.insertAdjacentHTML('beforeend', footerHtml)
+}
+
+// ========== HTML 转义，防止 innerHTML 拼接时的 XSS 注入 ==========
+export function escapeHtml(str) {
+  if (str == null) return ''
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+// ========== 统一的表单校验，三个页面复用 ==========
+// 返回 { pass, titleErr, contentErr }
+export function validateTodo(title, content) {
+  let pass = true
+  let titleErr = ''
+  let contentErr = ''
+  if (title.length < 3 || title.length > 20) {
+    titleErr = '标题必填，长度3-20字符'
+    pass = false
+  }
+  if (content.length > 100) {
+    contentErr = '描述不能超过100字'
+    pass = false
+  }
+  return { pass, titleErr, contentErr }
+}
+
+// ========== 生成唯一 id，避免 Date.now() 快速连点重复 ==========
+export function generateTodoId() {
+  return Date.now() + Math.floor(Math.random() * 1000)
+}
+
+// ========== 组装一条新任务，首页/列表页复用，字段保持一致 ==========
+export function createTodo(title, content) {
+  return {
+    id: generateTodoId(),
+    title,
+    content,
+    done: false,
+    createTime: new Date().toLocaleDateString()
+  }
+}
+
+// ========== 安全读取 localStorage 里的 JSON ==========
+// 存档被手工改坏、或旧版本写入非数组时，直接抛异常会让整页白屏，
+// 这里统一兜底成 fallback 值。
+function readJson(key, fallback) {
+  try {
+    const str = localStorage.getItem(key)
+    if (!str) return fallback
+    const val = JSON.parse(str)
+    if (Array.isArray(fallback)) return Array.isArray(val) ? val : fallback
+    return val == null ? fallback : val
+  } catch (err) {
+    console.warn('本地数据解析失败，已按空数据继续：' + key, err)
+    return fallback
+  }
+}
+
+// ========== id 归一化：地址栏 ?id=1 取到的是字符串，直接 === 比数字会找不到任务 ==========
+function normalizeId(id) {
+  const num = Number(id)
+  return Number.isNaN(num) ? id : num
 }
 
 // ========= LocalStorage 工具函数：待办数据持久化 =========
@@ -36,26 +102,39 @@ export function addTodo(todoObj) {
   saveTodoList(list)
 }
 
-// 根据id删除待办
+// 根据id删除待办，返回是否真的删掉了
 export function delTodo(id) {
-  let list = getTodoList()
-  list = list.filter(item => item.id !== id)
-  saveTodoList(list)
+  const target = normalizeId(id)
+  const list = getTodoList()
+  const next = list.filter(item => normalizeId(item.id) !== target)
+  if (next.length === list.length) return false
+  saveTodoList(next)
+  return true
 }
 
 // 根据id获取单条任务
 export function getTodoById(id) {
-  return getTodoList().find(item => item.id === id)
+  const target = normalizeId(id)
+  return getTodoList().find(item => normalizeId(item.id) === target)
 }
 
-// 修改任务
+// 修改任务，返回是否修改成功（任务可能已被别的页面删掉）
 export function editTodo(id, newData) {
+  const target = normalizeId(id)
   const list = getTodoList()
-  const idx = list.findIndex(i=>i.id === id)
-  if(idx !== -1){
-    list[idx] = {...list[idx], ...newData}
-    saveTodoList(list)
-  }
+  const idx = list.findIndex(i => normalizeId(i.id) === target)
+  if(idx === -1) return false
+  list[idx] = {...list[idx], ...newData}
+  saveTodoList(list)
+  return true
+}
+
+// 切换完成状态，返回切换后的 done 值（任务不存在返回 null）
+export function toggleTodoDone(id) {
+  const task = getTodoById(id)
+  if(!task) return null
+  editTodo(task.id, { done: !task.done })
+  return !task.done
 }
 // ===================== 登录、弹窗、用户隔离逻辑 =====================
 // 是否看过欢迎提示
@@ -72,8 +151,7 @@ const CURRENT_USER_KEY = "currentUser"
 
 // 获取全部注册用户
 export function getUserList() {
-  const str = localStorage.getItem(USER_LIST_KEY)
-  return str ? JSON.parse(str) : []
+  return readJson(USER_LIST_KEY, [])
 }
 
 // 注册用户
@@ -120,9 +198,7 @@ function getUserInitFlagKey(username){
 export function getTodoList() {
   const user = getCurrentUser()
   if(!user) return []
-  const key = getUserTodoKey(user)
-  const str = localStorage.getItem(key)
-  return str ? JSON.parse(str) : []
+  return readJson(getUserTodoKey(user), [])
 }
 
 export function saveTodoList(arr) {
@@ -134,10 +210,12 @@ export function saveTodoList(arr) {
 
 // 判断该用户是否已经加载过示例数据
 export function isUserHasInitData(userName){
+  if(!userName) return false // 未登录时不要共用 user_initLoaded_null 这个键
   return localStorage.getItem(getUserInitFlagKey(userName)) === "true"
 }
 // 设置标记：该用户已经加载过示例，以后不再生成
 export function markUserInitLoaded(userName){
+  if(!userName) return
   localStorage.setItem(getUserInitFlagKey(userName), "true")
 }
 
@@ -147,11 +225,19 @@ export function createInitTodoForNewUser(){
   if(!user) return
   if(isUserHasInitData(user)) return; //已经加载过，直接返回，不再生成
 
+  // 关键：老用户（早期版本没有 init 标记）本地已经有自己的任务，
+  // 这里只补标记，绝不能拿示例数据覆盖他的数据。
+  if(getTodoList().length > 0){
+    markUserInitLoaded(user)
+    return
+  }
+
   // 示例测试任务
   const initData = [
-    {id:1, title:"欢迎使用待办清单", content:"这是系统给你的示例任务，可以直接删除", done:false, createTime:"2026‑09‑17"},
-    {id:2, title:"完成web课程作业", content:"完成待办综合项目", done:false, createTime:"2026‑09‑17"}
+    {id:1, title:"欢迎使用待办清单", content:"这是系统给你的示例任务，可以直接删除", done:false, createTime:"2026-09-17"},
+    {id:2, title:"完成web课程作业", content:"完成待办综合项目", done:false, createTime:"2026-09-17"}
   ]
   saveTodoList(initData)
   markUserInitLoaded(user) //打上标记！！！删除完以后刷新不会再出现
 }
+

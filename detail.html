@@ -13,14 +13,18 @@
       <div id="detailBox"></div>
       <form id="editForm">
         <input type="hidden" id="editId">
-        <input type="text" id="editTitle">
-        <textarea id="editContent"></textarea>
+        <input type="text" id="editTitle" placeholder="任务标题(必填，3-20字符)">
+        <div class="err-msg" id="editTitleErr"></div>
+
+        <textarea id="editContent" placeholder="任务描述，最多100字"></textarea>
+        <div class="err-msg" id="editContentErr"></div>
+
         <button>保存修改</button>
       </form>
     </section>
   </main>
 
-  <script type="module" src="./js/common.js"></script>
+    <!-- common.js 已由 detail.js 内部 import，无需重复引入 -->
   <script type="module" src="./js/detail.js"></script>
 </body>
 </html>

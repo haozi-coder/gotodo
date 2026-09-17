@@ -46,7 +46,7 @@ const msgDom = document.querySelector('#msg')
 
 // 如果已经登录，直接跳首页
 if(getCurrentUser()){
-  location.href="./index.html"
+  location.replace("./index.html")
 }
 
 // 登录
@@ -57,7 +57,7 @@ document.querySelector("#loginForm").onsubmit = function(e){
   if(loginUser(u,p)){
     //登录成功：判断是否新用户，如果没加载示例任务，则生成一次
     createInitTodoForNewUser()
-    location.href="./index.html"
+    location.replace("./index.html")
   }else{
     msgDom.innerText="用户名或者密码错误！"
   }

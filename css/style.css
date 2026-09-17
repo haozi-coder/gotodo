@@ -61,7 +61,17 @@ footer{
 .done{
   background:#e8ffe8;
   border-color:#9bd99b;
+}
+/* 删除线只画在文字上，否则「取消完成」按钮和链接也会被划掉 */
+.done h3,
+.done h4,
+.done p{
   text-decoration: line-through;
+}
+
+/* hidden 属性必须能生效：下面 form{display:flex} 会盖掉浏览器默认的 hidden 样式 */
+[hidden]{
+  display:none !important;
 }
 
 /* 表单样式 */
@@ -78,6 +88,11 @@ input,textarea,button{
 .err-msg{
   color:red;
   font-size:14px;
+}
+/* 空列表提示 */
+.empty-tip{
+  color:#666;
+  padding:12px 0;
 }
 
 /* ========= 响应式媒体查询 ========= */
