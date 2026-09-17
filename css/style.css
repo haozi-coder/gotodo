@@ -1,143 +1,415 @@
-/* 全局重置，必写，防止布局错乱 */
+/* ========== 全局重置 ========== */
 *{
   margin:0;
   padding:0;
   box-sizing: border-box;
 }
+
+:root{
+  --primary: #4a6cf7;
+  --primary-dark: #3a56d4;
+  --success: #52c41a;
+  --danger: #ff4d4f;
+  --bg: #f5f7fa;
+  --card-bg: #ffffff;
+  --text: #2c3e50;
+  --text-light: #8c8c8c;
+  --radius: 10px;
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-hover: 0 4px 16px rgba(0,0,0,0.12);
+}
+
 body{
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  font-family: system-ui;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
   padding-bottom: 60px;
+  line-height: 1.6;
 }
+
 main{
-  padding:16px;
-  max-width:1200px;
-  margin:0 auto;
-  width:100%;
+  padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  flex: 1;
 }
-/* 导航样式 */
+
+/* ========== 导航栏 ========== */
 .nav-bar{
-  background:#2c3e50;
-  color:white;
-  padding:1rem;
-  display:flex;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  padding: 0.8rem 1.5rem;
+  display: flex;
   flex-wrap: wrap;
-  gap:1rem;
-  align-items:center;
+  gap: 1rem;
+  align-items: center;
   justify-content: space-between;
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.nav-bar .title{
+  font-size: 1.1rem;
+  font-weight: 600;
 }
 .nav-list{
-  display:flex;
-  gap:20px;
-  list-style:none;
+  display: flex;
+  gap: 8px;
+  list-style: none;
 }
 .nav-list a{
-  color:#fff;
-  text-decoration:none;
+  color: rgba(255,255,255,0.85);
+  text-decoration: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  transition: all 0.2s;
+  font-size: 0.95rem;
 }
+.nav-list a:hover{
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+}
+
+/* ========== 底部栏 ========== */
 footer{
-  position:fixed;
-  bottom:0;
-  width:100%;
-  background:#2c3e50;
-  color:#fff;
-  text-align:center;
-  padding:10px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: var(--text);
+  color: rgba(255,255,255,0.7);
+  text-align: center;
+  padding: 12px;
+  font-size: 0.85rem;
 }
 
-/* 卡片布局 */
+/* ========== 卡片 ========== */
 .todo-card{
-  border:1px solid #ccc;
-  padding:12px;
-  margin:8px 0;
-  border-radius:8px;
-  /* 未完成任务：红色底色 */
-  background:#ffe5e5;
-  border-color:#ff9b9b;
+  background: var(--card-bg);
+  border: 1px solid #e8e8e8;
+  padding: 16px;
+  margin: 0;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  transition: all 0.25s ease;
+  border-left: 4px solid var(--danger);
 }
-/* 已完成任务：绿色底色 */
-.done{
-  background:#e8ffe8;
-  border-color:#9bd99b;
+.todo-card:hover{
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
 }
-/* 删除线只画在文字上，否则「取消完成」按钮和链接也会被划掉 */
-.done h3,
-.done h4,
-.done p{
+/* 已完成任务 */
+.todo-card.done{
+  background: #f6ffed;
+  border-color: #b7eb8f;
+  border-left-color: var(--success);
+}
+.todo-card.done:hover{
+  box-shadow: 0 4px 16px rgba(82,196,26,0.15);
+}
+/* 删除线只画在已完成任务的文字上 */
+.todo-card.done h3,
+.todo-card.done h4,
+.todo-card.done p{
   text-decoration: line-through;
+  opacity: 0.7;
 }
 
-/* hidden 属性必须能生效：下面 form{display:flex} 会盖掉浏览器默认的 hidden 样式 */
+/* 卡片内文字间距 */
+.todo-card h4{
+  font-size: 1.05rem;
+  margin-bottom: 6px;
+}
+.todo-card p{
+  font-size: 0.9rem;
+  color: var(--text-light);
+  margin-bottom: 8px;
+}
+.todo-card p:last-of-type{
+  font-size: 0.8rem;
+}
+
+/* ========== hidden ========== */
 [hidden]{
-  display:none !important;
+  display: none !important;
 }
 
-/* 表单样式 */
+/* ========== 表单 ========== */
 form{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  margin:15px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 16px 0;
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
 }
-input,textarea,button{
-  padding:8px;
-  font-size:16px;
-}
-.err-msg{
-  color:red;
-  font-size:14px;
-}
-/* 空列表提示 */
-.empty-tip{
-  color:#666;
-  padding:12px 0;
+form h4{
+  font-size: 1rem;
+  color: var(--text);
 }
 
-/* 首页统计侧边栏 */
+input, textarea, select{
+  padding: 10px 12px;
+  font-size: 15px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: #fff;
+  width: 100%;
+}
+input:focus, textarea:focus, select:focus{
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(74,108,247,0.15);
+}
+textarea{
+  resize: vertical;
+  min-height: 60px;
+}
+
+button{
+  padding: 10px 20px;
+  font-size: 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+button:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+button:active{
+  transform: translateY(0);
+}
+/* 主按钮（提交类） */
+form button[type="submit"], .toggle-btn{
+  background: var(--primary);
+  color: #fff;
+}
+form button[type="submit"]:hover, .toggle-btn:hover{
+  background: var(--primary-dark);
+}
+/* 危险按钮（删除） */
+.del-btn{
+  background: #fff1f0;
+  color: var(--danger);
+  border: 1px solid #ffa39e;
+}
+.del-btn:hover{
+  background: var(--danger);
+  color: #fff;
+}
+/* 链接样式 */
+.todo-card a{
+  color: var(--primary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  margin-right: 12px;
+}
+.todo-card a:hover{
+  text-decoration: underline;
+}
+
+.err-msg{
+  color: var(--danger);
+  font-size: 0.85rem;
+  min-height: 1.2em;
+}
+
+/* ========== 空列表提示 ========== */
+.empty-tip{
+  color: var(--text-light);
+  padding: 24px 0;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+/* ========== 首页统计侧边栏 ========== */
 #stat-aside{
-  background:#f0f4f8;
-  border-left:3px solid #2c3e50;
-  padding:12px 16px;
-  margin:10px 0;
-  border-radius:0 8px 8px 0;
+  background: var(--card-bg);
+  border: none;
+  border-top: 3px solid var(--primary);
+  padding: 16px;
+  margin: 12px 0;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+#stat-aside p{
+  margin: 4px 0;
+  font-size: 0.95rem;
 }
 /* Canvas 图表居中 */
 .chart-area{
-  display:flex;
-  justify-content:center;
-  margin:10px 0;
+  display: flex;
+  justify-content: center;
+  margin: 12px 0;
 }
 .chart-area canvas{
-  max-width:140px;
+  max-width: 140px;
 }
-/* 懒加载图片：居中、圆角、淡入效果 */
+/* 懒加载图片 */
 .lazy-img{
-  display:block;
-  margin:8px auto;
-  border-radius:8px;
-  max-width:120px;
-  opacity:0.9;
+  display: block;
+  margin: 8px auto;
+  border-radius: 8px;
+  max-width: 100px;
+  opacity: 0.9;
+}
+
+/* ========== 搜索筛选栏 ========== */
+.search-bar{
+  display: flex;
+  gap: 10px;
+  margin: 12px 0;
+  flex-wrap: wrap;
+}
+.search-bar input{
+  flex: 1;
+  min-width: 150px;
+}
+.search-bar select{
+  width: auto;
+  min-width: 100px;
+}
+
+/* ========== 欢迎弹窗 ========== */
+#welcomeModal{
+  background: rgba(0,0,0,0.5) !important;
+  backdrop-filter: blur(4px);
+}
+#welcomeModal > div{
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2) !important;
+  max-width: 320px !important;
+  text-align: center;
+}
+#closeTipBtn{
+  background: var(--primary);
+  color: #fff;
+  width: 100%;
+  margin-top: 8px;
+}
+
+/* ========== 登录页 ========== */
+.login-wrap{
+  max-width: 420px;
+  margin: 60px auto !important;
+  border: none !important;
+  padding: 32px !important;
+  border-radius: 16px !important;
+  box-shadow: var(--shadow-hover);
+  background: var(--card-bg);
+}
+.login-wrap h2{
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.3rem;
+  color: var(--text);
+}
+.login-wrap form{
+  box-shadow: none;
+  padding: 0;
+  margin: 12px 0;
+}
+
+/* ========== 页面标题 ========== */
+h2{
+  font-size: 1.3rem;
+  margin: 8px 0 12px;
+  color: var(--text);
+}
+h3{
+  font-size: 1.1rem;
+  margin: 16px 0 8px;
+}
+
+/* ========== 退出登录按钮 ========== */
+#logoutBtn{
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  padding: 4px 12px;
+  font-size: 0.85rem;
+  margin-left: 8px;
+}
+#logoutBtn:hover{
+  background: var(--danger);
+  color: #fff;
 }
 
 /* ========= 响应式媒体查询 ========= */
-/* 手机 <768px：单列 */
-@media (max-width:767px) {
+
+/* 手机 <768px：单列紧凑布局 */
+@media (max-width: 767px) {
   .nav-bar{
-    flex-direction:column;
-    align-items:flex-start;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0.8rem 1rem;
   }
   .nav-list{
-    flex-direction:column;
-    gap:8px;
+    width: 100%;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .nav-list a{
+    display: block;
+    padding: 8px 12px;
+  }
+  main{
+    padding: 12px;
+  }
+  form{
+    padding: 16px;
+  }
+  .todo-card{
+    margin-bottom: 10px;
+  }
+  /* 手机端按钮更大，方便点击 */
+  button{
+    padding: 12px 16px;
+    font-size: 16px;
+  }
+  input, textarea, select{
+    font-size: 16px; /* 防止 iOS 自动缩放 */
   }
 }
-/* 桌面 >=768px 多列卡片（Grid） */
-@media (min-width:768px){
+
+/* 平板/桌面 >=768px：多列布局 */
+@media (min-width: 768px) {
+  /* 任务卡片两列网格 */
   .todo-wrap{
-    display:grid;
+    display: grid;
     grid-template-columns: 1fr 1fr;
-    gap:16px;
+    gap: 16px;
+  }
+  /* 首页：统计侧边栏和主内容并排 */
+  .stat{
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+  .stat h2, .stat > div:first-of-type{
+    grid-column: 1 / -1; /* 标题和用户信息跨满两列 */
+  }
+  #stat-aside{
+    margin: 0;
+    position: sticky;
+    top: 80px;
+  }
+}
+
+/* 大屏 >=1200px：三列卡片 */
+@media (min-width: 1200px) {
+  .todo-wrap{
+    grid-template-columns: repeat(3, 1fr);
   }
 }
