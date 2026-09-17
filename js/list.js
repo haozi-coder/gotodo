@@ -53,7 +53,8 @@ function refresh(){
   let temp = getTodoList()
 
   if(keyword){
-    temp = temp.filter(i => String(i.title).toLowerCase().includes(keyword))
+    // 同时匹配标题和内容（老数据可能缺 content 字段，用 ?? 兜底）
+    temp = temp.filter(i => (String(i.title) + ' ' + String(i.content ?? '')).toLowerCase().includes(keyword))
   }
   if(filterVal === 'done') temp = temp.filter(i => i.done)
   if(filterVal === 'undone') temp = temp.filter(i => !i.done)
