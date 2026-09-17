@@ -1,0 +1,97 @@
+/* 全局重置，必写，防止布局错乱 */
+*{
+  margin:0;
+  padding:0;
+  box-sizing: border-box;
+}
+body{
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: system-ui;
+  padding-bottom: 60px;
+}
+main{
+  padding:16px;
+  max-width:1200px;
+  margin:0 auto;
+  width:100%;
+}
+/* 导航样式 */
+.nav-bar{
+  background:#2c3e50;
+  color:white;
+  padding:1rem;
+  display:flex;
+  flex-wrap: wrap;
+  gap:1rem;
+  align-items:center;
+  justify-content: space-between;
+}
+.nav-list{
+  display:flex;
+  gap:20px;
+  list-style:none;
+}
+.nav-list a{
+  color:#fff;
+  text-decoration:none;
+}
+footer{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  background:#2c3e50;
+  color:#fff;
+  text-align:center;
+  padding:10px;
+}
+
+/* 卡片布局 */
+.todo-card{
+  border:1px solid #ccc;
+  padding:12px;
+  margin:8px 0;
+  border-radius:8px;
+}
+.done{
+  background:#e8ffe8;
+  text-decoration: line-through;
+}
+
+/* 表单样式 */
+form{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin:15px 0;
+}
+input,textarea,button{
+  padding:8px;
+  font-size:16px;
+}
+.err-msg{
+  color:red;
+  font-size:14px;
+}
+
+/* ========= 响应式媒体查询 ========= */
+/* 手机 <768px：单列 */
+@media (max-width:767px) {
+  .nav-bar{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  .nav-list{
+    flex-direction:column;
+    gap:8px;
+  }
+}
+/* 桌面 >=768px 多列卡片（Grid） */
+@media (min-width:768px){
+  .todo-wrap{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:16px;
+  }
+}

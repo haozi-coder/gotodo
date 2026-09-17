@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh‑CN">
+<head>
+  <meta charset="UTF‑8">
+  <!-- 移动端视口，必须写！否则手机布局乱掉 -->
+  <meta name="viewport" content="width=device‑width, initial‑scale=1.0">
+  <title>待办-首页总览</title>
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <main>
+    <section class="stat">
+      <h2>📊任务总览</h2>
+      <div id="stat-box"></div>
+      <br>
+      <h3>最近任务</h3>
+      <div id="recent-todo"></div>
+    </section>
+  </main>
+
+  <!-- type="module" 才支持import导出 -->
+  <script type="module" src="./js/common.js"></script>
+  <script type="module" src="./js/index.js"></script>
+</body>
+</html>

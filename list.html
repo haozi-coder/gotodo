@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh‑CN">
+<head>
+  <meta charset="UTF‑8">
+  <meta name="viewport" content="width=device‑width, initial‑scale=1.0">
+  <title>全部待办列表</title>
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <main>
+    <section>
+      <h2>全部任务</h2>
+      <!-- 搜索框 -->
+      <div>
+        <input id="search-input" placeholder="搜索任务标题">
+        <select id="filter-select">
+          <option value="all">全部</option>
+          <option value="done">已完成</option>
+          <option value="undone">未完成</option>
+        </select>
+      </div>
+
+      <!-- 新增待办表单，带前端校验 -->
+      <form id="addTodoForm">
+        <h4>新增任务</h4>
+        <input type="text" id="title" placeholder="任务标题(必填，3‑20字符)">
+        <div class="err-msg" id="titleErr"></div>
+
+        <textarea id="content" placeholder="任务描述，最多100字"></textarea>
+        <div class="err-msg" id="contentErr"></div>
+
+        <button type="submit">提交新增</button>
+      </form>
+
+      <div class="todo-wrap" id="todoContainer"></div>
+    </section>
+  </main>
+
+  <script type="module" src="./js/common.js"></script>
+  <script type="module" src="./js/list.js"></script>
+</body>
+</html>
