@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登录｜待办清单系统</title>
+  <link rel="stylesheet" href="./css/style.css">
+  <style>
+    .login-wrap{
+      max-width:420px;
+      margin:40px auto;
+      border:1px solid #ccc;
+      padding:24px;
+      border-radius:10px;
+    }
+    .tip{
+      color:red;
+      margin:8px 0;
+    }
+  </style>
+</head>
+<body>
+<main>
+  <div class="login-wrap">
+    <h2>待办清单系统 - 登录/注册</h2>
+    <div class="tip" id="msg"></div>
+    <form id="loginForm">
+      <input placeholder="用户名" id="username" required>
+      <input type="password" placeholder="密码" id="pwd" required>
+      <button type="submit">登录</button>
+    </form>
+    <hr style="margin:20px 0;">
+    <form id="regForm">
+      <h4>新用户注册</h4>
+      <input placeholder="设置用户名" id="regUser">
+      <input type="password" placeholder="设置密码" id="regPwd">
+      <button type="submit">注册账号</button>
+    </form>
+  </div>
+</main>
+
+<script type="module">
+import {registerUser,loginUser,getCurrentUser,createInitTodoForNewUser} from "./js/common.js"
+
+const msgDom = document.querySelector('#msg')
+
+// 如果已经登录，直接跳首页
+if(getCurrentUser()){
+  location.href="./index.html"
+}
+
+// 登录
+document.querySelector("#loginForm").onsubmit = function(e){
+  e.preventDefault()
+  const u = document.querySelector('#username').value.trim()
+  const p = document.querySelector('#pwd').value.trim()
+  if(loginUser(u,p)){
+    //登录成功：判断是否新用户，如果没加载示例任务，则生成一次
+    createInitTodoForNewUser()
+    location.href="./index.html"
+  }else{
+    msgDom.innerText="用户名或者密码错误！"
+  }
+}
+
+//注册
+document.querySelector("#regForm").onsubmit = function(e){
+  e.preventDefault()
+  const u = document.querySelector('#regUser').value.trim()
+  const p = document.querySelector('#regPwd').value.trim()
+  if(!u||!p){
+    msgDom.innerText="用户名密码不能为空"
+    return
+  }
+  if(registerUser(u,p)){
+    msgDom.innerText="注册成功！请登录"
+  }else{
+    msgDom.innerText="账号已经存在！"
+  }
+}
+</script>
+</body>
+</html>
