@@ -19,7 +19,13 @@
         <textarea id="editContent" placeholder="任务描述，最多100字"></textarea>
         <div class="err-msg" id="editContentErr"></div>
 
-        <button>保存修改</button>
+        <label class="field-label">预期完成时间（可选）</label>
+        <input type="date" id="editDueTime">
+
+        <div class="modal-actions">
+          <button type="button" id="backBtn" class="btn-secondary">返回</button>
+          <button type="submit" class="btn-primary">保存修改</button>
+        </div>
       </form>
     </section>
   </main>

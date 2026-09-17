@@ -10,6 +10,7 @@
   --primary-dark: #3a56d4;
   --success: #52c41a;
   --danger: #ff4d4f;
+  --warning: #fa8c16;
   --bg: #f5f7fa;
   --card-bg: #ffffff;
   --text: #2c3e50;
@@ -87,55 +88,105 @@ footer{
   font-size: 0.85rem;
 }
 
-/* ========== 卡片 ========== */
+/* ========== 用户信息栏 ========== */
+.user-bar{
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+/* ========== 页面标题 ========== */
+.section-title{
+  font-size: 1.2rem;
+  margin: 0 0 16px;
+  color: var(--text);
+}
+
+/* ========== 任务卡片 ========== */
 .todo-card{
+  position: relative;
   background: var(--card-bg);
   border: 1px solid #e8e8e8;
   padding: 16px;
-  margin: 0;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   transition: all 0.25s ease;
-  border-left: 4px solid var(--danger);
+  margin-bottom: 12px;
 }
 .todo-card:hover{
   box-shadow: var(--shadow-hover);
   transform: translateY(-2px);
 }
-/* 已完成任务 */
-.todo-card.done{
-  background: #f6ffed;
-  border-color: #b7eb8f;
-  border-left-color: var(--success);
-}
-.todo-card.done:hover{
-  box-shadow: 0 4px 16px rgba(82,196,26,0.15);
-}
-/* 删除线只画在已完成任务的文字上 */
-.todo-card.done h3,
-.todo-card.done h4,
-.todo-card.done p{
-  text-decoration: line-through;
-  opacity: 0.7;
+
+/* 卡片左上角日期角标 */
+.card-date-badge{
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 3px 10px;
+  border-radius: var(--radius) 0 8px 0;
+  font-weight: 500;
 }
 
-/* 卡片内文字间距 */
 .todo-card h4{
   font-size: 1.05rem;
-  margin-bottom: 6px;
+  margin: 16px 0 6px;
 }
 .todo-card p{
   font-size: 0.9rem;
   color: var(--text-light);
   margin-bottom: 8px;
 }
-.todo-card p:last-of-type{
-  font-size: 0.8rem;
+
+/* 卡片底部：预期时间 + 操作按钮 */
+.card-footer{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #f0f0f0;
+}
+.due-time{
+  font-size: 0.85rem;
+  color: var(--warning);
+}
+.card-actions{
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.edit-link{
+  color: var(--text-light);
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+.edit-link:hover{
+  color: var(--primary);
 }
 
-/* ========== hidden ========== */
-[hidden]{
-  display: none !important;
+/* ========== 待完成列表：居中单列 ========== */
+.todo-list-center{
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* 日期分组 */
+.date-group{
+  margin-bottom: 20px;
+}
+.date-label{
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 8px;
+  padding-left: 4px;
 }
 
 /* ========== 表单 ========== */
@@ -144,14 +195,11 @@ form{
   flex-direction: column;
   gap: 10px;
   margin: 16px 0;
-  background: var(--card-bg);
-  padding: 20px;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
 }
-form h4{
-  font-size: 1rem;
-  color: var(--text);
+.field-label{
+  font-size: 0.85rem;
+  color: var(--text-light);
+  margin-bottom: -6px;
 }
 
 input, textarea, select{
@@ -173,6 +221,7 @@ textarea{
   min-height: 60px;
 }
 
+/* ========== 按钮 ========== */
 button{
   padding: 10px 20px;
   font-size: 15px;
@@ -189,15 +238,38 @@ button:hover{
 button:active{
   transform: translateY(0);
 }
-/* 主按钮（提交类） */
-form button[type="submit"], .toggle-btn{
+
+/* 主按钮 */
+.btn-primary, form button[type="submit"]{
   background: var(--primary);
   color: #fff;
 }
-form button[type="submit"]:hover, .toggle-btn:hover{
+.btn-primary:hover, form button[type="submit"]:hover{
   background: var(--primary-dark);
 }
-/* 危险按钮（删除） */
+
+/* 次要按钮 */
+.btn-secondary{
+  background: #f5f5f5;
+  color: var(--text);
+  border: 1px solid #d9d9d9;
+}
+.btn-secondary:hover{
+  background: #e8e8e8;
+}
+
+/* 完成按钮 */
+.complete-btn{
+  background: var(--success);
+  color: #fff;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+}
+.complete-btn:hover{
+  background: #46a816;
+}
+
+/* 危险按钮 */
 .del-btn{
   background: #fff1f0;
   color: var(--danger);
@@ -206,16 +278,6 @@ form button[type="submit"]:hover, .toggle-btn:hover{
 .del-btn:hover{
   background: var(--danger);
   color: #fff;
-}
-/* 链接样式 */
-.todo-card a{
-  color: var(--primary);
-  text-decoration: none;
-  font-size: 0.9rem;
-  margin-right: 12px;
-}
-.todo-card a:hover{
-  text-decoration: underline;
 }
 
 .err-msg{
@@ -227,7 +289,7 @@ form button[type="submit"]:hover, .toggle-btn:hover{
 /* ========== 空列表提示 ========== */
 .empty-tip{
   color: var(--text-light);
-  padding: 24px 0;
+  padding: 40px 0;
   text-align: center;
   font-size: 0.95rem;
 }
@@ -243,10 +305,9 @@ form button[type="submit"]:hover, .toggle-btn:hover{
   box-shadow: var(--shadow);
 }
 #stat-aside p{
-  margin: 4px 0;
+  margin: 6px 0;
   font-size: 0.95rem;
 }
-/* Canvas 图表居中 */
 .chart-area{
   display: flex;
   justify-content: center;
@@ -255,7 +316,6 @@ form button[type="submit"]:hover, .toggle-btn:hover{
 .chart-area canvas{
   max-width: 140px;
 }
-/* 懒加载图片 */
 .lazy-img{
   display: block;
   margin: 8px auto;
@@ -264,20 +324,62 @@ form button[type="submit"]:hover, .toggle-btn:hover{
   opacity: 0.9;
 }
 
-/* ========== 搜索筛选栏 ========== */
-.search-bar{
+/* ========== FAB 浮动 + 号按钮 ========== */
+.fab-btn{
+  position: fixed;
+  bottom: 80px;
+  right: 30px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-size: 28px;
+  font-weight: 300;
   display: flex;
-  gap: 10px;
-  margin: 12px 0;
-  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(74,108,247,0.4);
+  z-index: 200;
+  padding: 0;
+  line-height: 1;
 }
-.search-bar input{
-  flex: 1;
-  min-width: 150px;
+.fab-btn:hover{
+  background: var(--primary-dark);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(74,108,247,0.5);
 }
-.search-bar select{
-  width: auto;
-  min-width: 100px;
+
+/* ========== 添加任务弹窗 ========== */
+.modal-overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+}
+.modal-box{
+  background: #fff;
+  padding: 28px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 440px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+.modal-box h3{
+  margin: 0 0 20px;
+  font-size: 1.15rem;
+}
+.modal-actions{
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 16px;
 }
 
 /* ========== 欢迎弹窗 ========== */
@@ -319,16 +421,10 @@ form button[type="submit"]:hover, .toggle-btn:hover{
   padding: 0;
   margin: 12px 0;
 }
-
-/* ========== 页面标题 ========== */
-h2{
-  font-size: 1.3rem;
-  margin: 8px 0 12px;
-  color: var(--text);
-}
-h3{
-  font-size: 1.1rem;
-  margin: 16px 0 8px;
+.tip{
+  color: var(--danger);
+  margin: 8px 0;
+  font-size: 0.9rem;
 }
 
 /* ========== 退出登录按钮 ========== */
@@ -347,7 +443,7 @@ h3{
 
 /* ========= 响应式媒体查询 ========= */
 
-/* 手机 <768px：单列紧凑布局 */
+/* 手机 <768px */
 @media (max-width: 767px) {
   .nav-bar{
     flex-direction: column;
@@ -366,51 +462,35 @@ h3{
   main{
     padding: 12px;
   }
-  form{
-    padding: 16px;
-  }
-  .todo-card{
-    margin-bottom: 10px;
-  }
-  /* 手机端按钮更大，方便点击 */
   button{
     padding: 12px 16px;
     font-size: 16px;
   }
   input, textarea, select{
-    font-size: 16px; /* 防止 iOS 自动缩放 */
+    font-size: 16px;
+  }
+  .fab-btn{
+    bottom: 70px;
+    right: 20px;
+    width: 52px;
+    height: 52px;
   }
 }
 
-/* 平板/桌面 >=768px：多列布局 */
+/* 平板/桌面 >=768px */
 @media (min-width: 768px) {
-  /* 任务卡片两列网格 */
-  .todo-wrap{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
   /* 首页：统计侧边栏和主内容并排 */
   .stat{
     display: grid;
     grid-template-columns: 280px 1fr;
-    gap: 20px;
+    gap: 24px;
     align-items: start;
   }
-  .stat h2, .stat > div:first-of-type{
-    grid-column: 1 / -1; /* 标题和用户信息跨满两列 */
+  .user-bar{
+    grid-column: 1 / -1;
   }
   #stat-aside{
-    margin: 0;
-    margin-top: 48px; /* 往下偏移，和右侧表单卡片顶部对齐 */
     position: sticky;
     top: 80px;
-  }
-}
-
-/* 大屏 >=1200px：三列卡片 */
-@media (min-width: 1200px) {
-  .todo-wrap{
-    grid-template-columns: repeat(3, 1fr);
   }
 }

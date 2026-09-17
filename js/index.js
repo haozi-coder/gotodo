@@ -1,25 +1,23 @@
-import {renderHeader, renderFooter, getTodoList, getCurrentUser, addTodo, toggleTodoDone,
-        isTipShown, setTipShown, logout, escapeHtml, validateTodo, createTodo} from './common.js'
+import {renderHeader, renderFooter, getTodoList, getCurrentUser, addTodo, completeTodo, delTodo,
+        isTipShown, setTipShown, logout, escapeHtml, validateTodo, createTodo, formatDate} from './common.js'
 
-// ========= 未登录直接跳登录页，后面的页面逻辑一律不执行 =========
+// ========= 未登录直接跳登录页 =========
 const currentUser = getCurrentUser()
 
-let modal = null
+let welcomeModal = null
 
-// ========= 渲染统计 + 最近任务（可点击完成） =========
-// ========= Canvas 绘制任务完成率环形图 =========
-function drawPieChart(canvas, done, total) {
+// ========= Canvas 绘制今日到期占比环形图 =========
+function drawPieChart(canvas, todayDue, total) {
   if (!canvas) return
   const ctx = canvas.getContext('2d')
   const cx = canvas.width / 2
   const cy = canvas.height / 2
   const radius = 56
-  const innerRadius = 36 // 环形图内径
+  const innerRadius = 36
 
-  // 清空画布
   ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-  // 无任务：画灰色空心圆 + 文字
+  // 无任务
   if (total === 0) {
     ctx.beginPath()
     ctx.arc(cx, cy, radius, 0, Math.PI * 2)
@@ -37,127 +35,185 @@ function drawPieChart(canvas, done, total) {
     return
   }
 
-  const doneRatio = done / total
-  const undoneRatio = 1 - doneRatio
-  const startAngle = -Math.PI / 2 // 从12点钟方向开始
+  const dueRatio = todayDue / total
+  const otherRatio = 1 - dueRatio
+  const startAngle = -Math.PI / 2
 
-  // 未完成部分（浅红）
+  // 其他任务（浅蓝灰）
   ctx.beginPath()
   ctx.moveTo(cx, cy)
-  ctx.arc(cx, cy, radius, startAngle, startAngle + undoneRatio * Math.PI * 2)
+  ctx.arc(cx, cy, radius, startAngle, startAngle + otherRatio * Math.PI * 2)
   ctx.closePath()
-  ctx.fillStyle = '#ffb3b3'
+  ctx.fillStyle = '#d6e4ff'
   ctx.fill()
 
-  // 已完成部分（浅绿）
-  if (doneRatio > 0) {
+  // 今日到期（橙色突出）
+  if (dueRatio > 0) {
     ctx.beginPath()
     ctx.moveTo(cx, cy)
-    ctx.arc(cx, cy, radius, startAngle + undoneRatio * Math.PI * 2, startAngle + Math.PI * 2)
+    ctx.arc(cx, cy, radius, startAngle + otherRatio * Math.PI * 2, startAngle + Math.PI * 2)
     ctx.closePath()
-    ctx.fillStyle = '#9bd99b'
+    ctx.fillStyle = '#fa8c16'
     ctx.fill()
   }
 
-  // 中间挖白（环形效果）
+  // 中间挖白
   ctx.beginPath()
   ctx.arc(cx, cy, innerRadius, 0, Math.PI * 2)
   ctx.fillStyle = '#f0f4f8'
   ctx.fill()
 
-  // 中间百分比文字
-  const percent = Math.round(doneRatio * 100)
+  // 中间文字
+  const percent = Math.round(dueRatio * 100)
   ctx.fillStyle = '#2c3e50'
   ctx.font = 'bold 18px system-ui'
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
-  ctx.fillText(percent + '%', cx, cy - 6)
+  ctx.fillText(todayDue + '/' + total, cx, cy - 6)
   ctx.font = '11px system-ui'
   ctx.fillStyle = '#666'
-  ctx.fillText('完成率', cx, cy + 12)
+  ctx.fillText('今日到期', cx, cy + 12)
 }
 
-function renderHome(){
+// ========= 按创建时间分组 =========
+function groupByCreateTime(list) {
+  const groups = {}
+  list.forEach(item => {
+    const date = item.createTime || '未知日期'
+    if (!groups[date]) groups[date] = []
+    groups[date].push(item)
+  })
+  // 按日期倒序排列（最新的在前）
+  const sortedDates = Object.keys(groups).sort().reverse()
+  return sortedDates.map(date => ({ date, items: groups[date] }))
+}
+
+// ========= 渲染统计 + 待完成任务列表 =========
+function renderHome() {
   const list = getTodoList()
   const total = list.length
-  const doneNum = list.filter(i=>i.done).length
-  const undoneNum = total - doneNum
+  const today = formatDate()
+  const todayDue = list.filter(i => i.dueTime === today).length
 
+  // 统计信息
   document.querySelector('#stat-box').innerHTML = `
-    <p>总任务：${total}</p>
-    <p>已完成：${doneNum}</p>
-    <p>未完成：${undoneNum}</p>
+    <p>📋待完成任务：<strong>${total}</strong> 项</p>
+    <p>⏰今日到期：<strong style="color:#fa8c16">${todayDue}</strong> 项</p>
   `
 
-  // 绘制 Canvas 环形图
-  drawPieChart(document.querySelector('#statChart'), doneNum, total)
+  // Canvas 环形图
+  drawPieChart(document.querySelector('#statChart'), todayDue, total)
 
-  // 展示前3条最近任务
-  const recent = list.slice(-3)
-  const recentBox = document.querySelector('#recent-todo')
+  // 待完成任务列表
+  const listBox = document.querySelector('#todoList')
 
-  if(recent.length === 0){
-    recentBox.innerHTML = '<p class="empty-tip">还没有任务，用上面的表单新增一条吧～</p>'
+  if (list.length === 0) {
+    listBox.innerHTML = '<p class="empty-tip">🎉没有待完成任务，点右下角 + 添加一条吧～</p>'
     return
   }
 
-  recentBox.innerHTML = recent.map(item=>`
-    <article class="todo-card ${item.done?'done':''}">
-      <h4>${escapeHtml(item.title)}</h4>
-      <p>${escapeHtml(item.content)}</p>
-      <button data-id="${escapeHtml(item.id)}" class="toggle-btn">${item.done?'↩️取消完成':'✅标记完成'}</button>
-      <a href="detail.html?id=${encodeURIComponent(item.id)}">去编辑详情</a>
-    </article>
+  // 按创建时间分组渲染
+  const groups = groupByCreateTime(list)
+  listBox.innerHTML = groups.map(group => `
+    <div class="date-group">
+      <div class="date-label">📅 ${escapeHtml(group.date)}</div>
+      ${group.items.map(item => `
+        <article class="todo-card">
+          <div class="card-date-badge">${escapeHtml(item.createTime)}</div>
+          <h4>${escapeHtml(item.title)}</h4>
+          ${item.content ? `<p>${escapeHtml(item.content)}</p>` : ''}
+          <div class="card-footer">
+            ${item.dueTime ? `<span class="due-time">⏰ 预期：${escapeHtml(item.dueTime)}</span>` : ''}
+            <div class="card-actions">
+              <a href="detail.html?id=${encodeURIComponent(item.id)}" class="edit-link">✏️编辑</a>
+              <button data-id="${escapeHtml(item.id)}" class="complete-btn">✅完成</button>
+            </div>
+          </div>
+        </article>
+      `).join('')}
+    </div>
   `).join('')
 
-  // 点击完成任务 / 取消完成
-  document.querySelectorAll('.toggle-btn').forEach(btn=>{
-    btn.onclick = function(){
-      toggleTodoDone(this.dataset.id)
-      renderHome() // 重新渲染，更新统计与样式
+  // 完成按钮：直接删除任务（已完成自动消失）
+  document.querySelectorAll('.complete-btn').forEach(btn => {
+    btn.onclick = function() {
+      completeTodo(this.dataset.id)
+      renderHome()
     }
   })
 }
 
-function init(){
+// ========= 添加弹窗控制 =========
+function setupAddModal() {
+  const fabBtn = document.querySelector('#fabAddBtn')
+  const addModal = document.querySelector('#addModal')
+  const cancelBtn = document.querySelector('#cancelAddBtn')
+
+  // 点 + 号打开弹窗
+  fabBtn.onclick = function() {
+    addModal.style.display = 'flex'
+    document.querySelector('#idxTitle').focus()
+  }
+
+  // 点取消关闭弹窗
+  cancelBtn.onclick = function() {
+    addModal.style.display = 'none'
+    document.querySelector('#indexAddForm').reset()
+    document.querySelector('#idxTitleErr').textContent = ''
+    document.querySelector('#idxContentErr').textContent = ''
+  }
+
+  // 点遮罩关闭弹窗
+  addModal.onclick = function(e) {
+    if (e.target === addModal) {
+      addModal.style.display = 'none'
+      document.querySelector('#indexAddForm').reset()
+    }
+  }
+}
+
+function init() {
   renderHeader()
   renderFooter()
 
-  modal = document.querySelector('#welcomeModal')
+  welcomeModal = document.querySelector('#welcomeModal')
   const closeBtn = document.querySelector('#closeTipBtn')
 
-  // 关闭按钮事件
-  closeBtn.onclick = function(){
+  closeBtn.onclick = function() {
     setTipShown()
-    modal.style.display = "none"
+    welcomeModal.style.display = "none"
   }
 
-  // ========= 首页快速新增任务（带前端校验） =========
-  document.querySelector('#indexAddForm').onsubmit = function(e){
+  // 添加弹窗
+  setupAddModal()
+
+  // 新增任务表单提交
+  document.querySelector('#indexAddForm').onsubmit = function(e) {
     e.preventDefault()
     const title = document.querySelector('#idxTitle').value.trim()
     const content = document.querySelector('#idxContent').value.trim()
+    const dueTime = document.querySelector('#idxDueTime').value
     const titleErr = document.querySelector('#idxTitleErr')
     const contentErr = document.querySelector('#idxContentErr')
 
     const result = validateTodo(title, content)
     titleErr.textContent = result.titleErr
     contentErr.textContent = result.contentErr
-    if(!result.pass) return
+    if (!result.pass) return
 
-    addTodo(createTodo(title, content))
+    addTodo(createTodo(title, content, dueTime))
     renderHome()
     this.reset()
+    document.querySelector('#addModal').style.display = 'none'
   }
 
-  window.onload = function(){
-    // 判断是否展示弹窗（默认隐藏，避免老用户看到一闪而过的遮罩）
-    modal.style.display = isTipShown() ? "none" : "flex"
+  window.onload = function() {
+    // 欢迎弹窗
+    welcomeModal.style.display = isTipShown() ? "none" : "flex"
 
-    // 展示用户名
+    // 用户名
     document.querySelector('#showUser').innerText = currentUser
-    // 退出登录
-    document.querySelector('#logoutBtn').onclick = function(){
+    document.querySelector('#logoutBtn').onclick = function() {
       logout()
       location.replace('./login.html')
     }
@@ -166,8 +222,8 @@ function init(){
   }
 }
 
-if(!currentUser){
+if (!currentUser) {
   location.replace('./login.html')
-}else{
+} else {
   init()
 }

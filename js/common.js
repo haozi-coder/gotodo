@@ -5,8 +5,7 @@ export function renderHeader() {
       <nav class="nav-bar">
         <div class="title">📝待办清单系统</div>
         <ul class="nav-list">
-          <li><a href="./index.html">首页总览</a></li>
-          <li><a href="./list.html">全部任务</a></li>
+          <li><a href="./index.html">首页</a></li>
         </ul>
       </nav>
     </header>
@@ -73,14 +72,16 @@ export function formatDate(d = new Date()) {
   return `${y}-${m}-${day}`
 }
 
-// ========== 组装一条新任务，首页/列表页复用，字段保持一致 ==========
-export function createTodo(title, content) {
+// ========== 组装一条新任务，字段保持一致 ==========
+// dueTime 为预期完成时间，可选（空字符串表示未设置）
+export function createTodo(title, content, dueTime = '') {
   return {
     id: generateTodoId(),
     title,
     content,
     done: false,
-    createTime: formatDate()
+    createTime: formatDate(),
+    dueTime: dueTime || ''
   }
 }
 
@@ -144,12 +145,10 @@ export function editTodo(id, newData) {
   return true
 }
 
-// 切换完成状态，返回切换后的 done 值（任务不存在返回 null）
-export function toggleTodoDone(id) {
-  const task = getTodoById(id)
-  if(!task) return null
-  editTodo(task.id, { done: !task.done })
-  return !task.done
+// 完成任务：直接从列表删除（已完成的任务自动消失，不保留）
+// 返回是否删除成功（任务可能已不存在）
+export function completeTodo(id) {
+  return delTodo(id)
 }
 // ===================== 登录、弹窗、用户隔离逻辑 =====================
 // 是否看过欢迎提示
@@ -305,8 +304,8 @@ export function createInitTodoForNewUser(){
 
   // 示例测试任务
   const initData = [
-    {id:1, title:"欢迎使用待办清单", content:"这是系统给你的示例任务，可以直接删除", done:false, createTime:"2026-09-17"},
-    {id:2, title:"完成web课程作业", content:"完成待办综合项目", done:false, createTime:"2026-09-17"}
+    {id:1, title:"欢迎使用待办清单", content:"这是系统给你的示例任务，可以直接删除", done:false, createTime:"2026-09-17", dueTime:""},
+    {id:2, title:"完成web课程作业", content:"完成待办综合项目", done:false, createTime:"2026-09-17", dueTime:"2026-09-20"}
   ]
   saveTodoList(initData)
   markUserInitLoaded(user) //打上标记！！！删除完以后刷新不会再出现
