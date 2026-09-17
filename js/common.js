@@ -1,5 +1,5 @@
 // ========== 公用头部导航 插入页面 ==========
-function renderHeader() {
+export function renderHeader() {
   const headerHtml = `
     <header>
       <nav class="nav-bar">
@@ -16,7 +16,7 @@ function renderHeader() {
 }
 
 // ========== 公用底部footer ==========
-function renderFooter() {
+export function renderFooter() {
   const footerHtml = `
     <footer>
       <p>校园综合项目｜待办清单系统 ©2026</p>
