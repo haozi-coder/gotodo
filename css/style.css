@@ -454,31 +454,91 @@ button:active{
   margin-top: 8px;
 }
 
-/* ========== 登录页 ========== */
-.login-wrap{
-  max-width: 420px;
-  margin: 60px auto !important;
-  border: none !important;
-  padding: 32px !important;
-  border-radius: 16px !important;
-  box-shadow: var(--shadow-hover);
+/* ========== 登录/注册窗口 ========== */
+.login-page{
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e8edff 0%, #f5f7fa 60%, #eef6ff 100%);
+}
+.login-window{
+  width: 400px;
+  max-width: 92vw;
   background: var(--card-bg);
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(30, 60, 140, 0.18);
+  overflow: hidden;
 }
-.login-wrap h2{
+
+/* 窗口标题栏 */
+.win-bar{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: #f0f2f7;
+  border-bottom: 1px solid #e6e8ef;
+}
+.win-dot{
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.win-dot.red{ background: #ff5f57; }
+.win-dot.yellow{ background: #febc2e; }
+.win-dot.green{ background: #28c840; }
+.win-title{
+  margin-left: 8px;
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+/* 窗口主体 */
+.win-body{
+  padding: 28px 28px 16px;
+}
+.win-body h2{
+  margin-bottom: 8px;
+  font-size: 1.25rem;
   text-align: center;
-  margin-bottom: 20px;
-  font-size: 1.3rem;
-  color: var(--text);
 }
-.login-wrap form{
+.win-body .tip{
+  min-height: 1.2em;
+  margin: 4px 0 8px;
+  text-align: center;
+}
+
+/* 窗口底部：注册/返回按钮固定在左下角 */
+.win-footer{
+  display: flex;
+  justify-content: flex-start;
+  padding: 4px 28px 18px;
+}
+.link-btn{
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 0.9rem;
+  padding: 4px 0;
+}
+.link-btn:hover{
+  background: none;
   box-shadow: none;
-  padding: 0;
-  margin: 12px 0;
+  transform: none;
+  text-decoration: underline;
+  color: var(--primary-dark);
 }
+
+/* 提示信息：错误红 / 成功绿 */
 .tip{
   color: var(--danger);
   margin: 8px 0;
   font-size: 0.9rem;
+}
+.tip-ok{
+  color: var(--success);
 }
 
 /* ========== 退出登录按钮 ========== */

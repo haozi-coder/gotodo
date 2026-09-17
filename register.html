@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>注册｜待办清单系统</title>
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body class="login-page">
+  <!-- 注册窗口 -->
+  <div class="login-window">
+    <!-- 窗口标题栏 -->
+    <div class="win-bar">
+      <span class="win-dot red"></span>
+      <span class="win-dot yellow"></span>
+      <span class="win-dot green"></span>
+      <span class="win-title">待办清单系统 · 注册</span>
+    </div>
+
+    <div class="win-body">
+      <h2>✨ 创建新账号</h2>
+      <div class="tip" id="msg"></div>
+
+      <form id="regForm">
+        <label class="field-label" for="regUser">用户名（唯一，登录时使用）</label>
+        <input type="text" id="regUser" placeholder="设置用户名" required autocomplete="username">
+        <label class="field-label" for="regPhone">手机号（11位）</label>
+        <input type="tel" id="regPhone" placeholder="请输入11位手机号" maxlength="11" autocomplete="tel">
+        <label class="field-label" for="regPwd">密码</label>
+        <input type="password" id="regPwd" placeholder="设置密码" required autocomplete="new-password">
+        <button type="submit" class="btn-primary">注 册</button>
+      </form>
+    </div>
+
+    <!-- 窗口底部左下角：返回登录 -->
+    <div class="win-footer">
+      <button type="button" id="backLoginBtn" class="link-btn">← 返回登录</button>
+    </div>
+  </div>
+
+  <script type="module" src="./js/register.js"></script>
+</body>
+</html>

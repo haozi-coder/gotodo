@@ -6,75 +6,36 @@
   <title>登录｜待办清单系统</title>
   <link rel="stylesheet" href="./css/style.css">
 </head>
-<body>
-<main>
-  <div class="login-wrap">
-    <h2>待办清单系统 - 登录/注册</h2>
-    <div class="tip" id="msg"></div>
-    <form id="loginForm">
-      <input placeholder="用户名" id="username" required>
-      <input type="password" placeholder="密码" id="pwd" required>
-      <button type="submit">登录</button>
-    </form>
-    <hr style="margin:20px 0;border:none;border-top:1px solid #eee;">
-    <form id="regForm">
-      <h4>新用户注册</h4>
-      <input placeholder="设置用户名" id="regUser">
-      <input type="tel" placeholder="手机号（11位）" id="regPhone" maxlength="11">
-      <input type="password" placeholder="设置密码" id="regPwd">
-      <button type="submit">注册账号</button>
-    </form>
+<body class="login-page">
+  <!-- 登录窗口 -->
+  <div class="login-window">
+    <!-- 窗口标题栏 -->
+    <div class="win-bar">
+      <span class="win-dot red"></span>
+      <span class="win-dot yellow"></span>
+      <span class="win-dot green"></span>
+      <span class="win-title">待办清单系统 · 登录</span>
+    </div>
+
+    <div class="win-body">
+      <h2>👋 欢迎回来</h2>
+      <div class="tip" id="msg"></div>
+
+      <form id="loginForm">
+        <label class="field-label" for="username">用户名</label>
+        <input type="text" id="username" placeholder="请输入用户名" required autocomplete="username">
+        <label class="field-label" for="pwd">密码</label>
+        <input type="password" id="pwd" placeholder="请输入密码" required autocomplete="current-password">
+        <button type="submit" class="btn-primary">登 录</button>
+      </form>
+    </div>
+
+    <!-- 窗口底部左下角：去注册 -->
+    <div class="win-footer">
+      <button type="button" id="goRegisterBtn" class="link-btn">还没有账号？点此注册</button>
+    </div>
   </div>
-</main>
 
-<script type="module">
-import {registerUser,loginUser,getCurrentUser,createInitTodoForNewUser,validatePhone} from "./js/common.js"
-
-const msgDom = document.querySelector('#msg')
-
-// 如果已经登录，直接跳首页
-if(getCurrentUser()){
-  location.replace("./index.html")
-}
-
-// 登录
-document.querySelector("#loginForm").onsubmit = async function(e){
-  e.preventDefault()
-  const u = document.querySelector('#username').value.trim()
-  const p = document.querySelector('#pwd').value.trim()
-  if(await loginUser(u,p)){
-    //登录成功：判断是否新用户，如果没加载示例任务，则生成一次
-    createInitTodoForNewUser()
-    location.replace("./index.html")
-  }else{
-    msgDom.innerText="用户名或者密码错误！"
-  }
-}
-
-//注册
-document.querySelector("#regForm").onsubmit = async function(e){
-  e.preventDefault()
-  const u = document.querySelector('#regUser').value.trim()
-  const p = document.querySelector('#regPwd').value.trim()
-  const phone = document.querySelector('#regPhone').value.trim()
-
-  // 前端校验：必填 + 手机号格式
-  if(!u || !p){
-    msgDom.innerText="用户名密码不能为空"
-    return
-  }
-  const phoneErr = validatePhone(phone)
-  if(phoneErr){
-    msgDom.innerText = phoneErr
-    return
-  }
-
-  if(await registerUser(u,p,phone)){
-    msgDom.innerText="注册成功！请登录"
-  }else{
-    msgDom.innerText="账号已经存在！"
-  }
-}
-</script>
+  <script type="module" src="./js/login.js"></script>
 </body>
 </html>

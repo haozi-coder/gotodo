@@ -168,6 +168,12 @@ export function getUserList() {
   return readJson(USER_LIST_KEY, [])
 }
 
+// 判断用户名是否已注册（登录前先查账号存在性，不存在则引导用户注册）
+export function userExists(username) {
+  if (!username) return false
+  return getUserList().some(u => u.username === username)
+}
+
 // ========== 密码加盐哈希（演示级方案） ==========
 // 优先用 Web Crypto 的 SHA-256；非安全上下文（如局域网 IP 访问）下 crypto.subtle
 // 不可用，降级为同步散列。注意：这仍是前端演示级加密，真实系统必须在服务端校验。
