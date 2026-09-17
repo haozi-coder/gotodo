@@ -9,9 +9,11 @@ import { tests } from './common.test.js'
 // 注入 localStorage 全局（common.js 的数据读写都依赖它）
 globalThis.localStorage = mockStorage
 
-// ---------- 17 项逻辑测试 ----------
+const total = tests.length
+
+// ---------- 逻辑测试 ----------
 console.log('')
-console.log('========== gotodo 逻辑测试（17 项） ==========')
+console.log('========== gotodo 逻辑测试（' + total + ' 项） ==========')
 let passed = 0
 const failed = []
 for (const t of tests) {
@@ -42,7 +44,7 @@ async function checkSyntax(path) {
 
 console.log('')
 console.log('========== 页面脚本语法检查 ==========')
-const syntaxTargets = ['../js/index.js', '../js/detail.js']
+const syntaxTargets = ['../js/index.js', '../js/detail.js', '../js/login.js', '../js/register.js']
 const syntaxResults = []
 for (const p of syntaxTargets) {
   const ok = await checkSyntax(p)
@@ -52,7 +54,6 @@ for (const p of syntaxTargets) {
 
 // ---------- 汇总 ----------
 console.log('')
-const total = tests.length
 const allPassed = failed.length === 0 && syntaxResults.every(Boolean)
 if (allPassed) {
   console.log(`========== 全部通过：${passed}/${total} 项逻辑测试 + ${syntaxResults.length} 个脚本语法检查 ✅ ==========`)

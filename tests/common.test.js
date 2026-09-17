@@ -4,7 +4,7 @@
 import {
   escapeHtml, validateTodo, validatePhone, formatDate, createTodo,
   addTodo, getTodoList, getTodoById, delTodo, editTodo, completeTodo,
-  registerUser, loginUser, getCurrentUser, logout,
+  registerUser, loginUser, getCurrentUser, logout, userExists,
   getTodayDoneCount, incrementTodayDone, createInitTodoForNewUser
 } from '../js/common.js'
 
@@ -195,7 +195,17 @@ export const tests = [
     }
   },
 
-  // ---------- 16-17：隔离与初始化 ----------
+  {
+    name: 'userExists 判断账号是否已注册（登录先验账号用）',
+    async fn() {
+      assert(userExists('nobody') === false, '未注册账号应返回 false')
+      assert(userExists('') === false, '空用户名应返回 false')
+      await registerUser('tom', '123456', '')
+      assert(userExists('tom') === true, '已注册账号应返回 true')
+      assert(userExists('Tom') === false, '用户名应区分大小写')
+    }
+  },
+  // ---------- 17-18：隔离与初始化 ----------
   {
     name: '用户待办数据按账号隔离，互不可见',
     async fn() {
