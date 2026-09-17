@@ -29,12 +29,12 @@ function renderHome(){
   }
 
   recentBox.innerHTML = recent.map(item=>`
-    <div class="todo-card ${item.done?'done':''}">
+    <article class="todo-card ${item.done?'done':''}">
       <h4>${escapeHtml(item.title)}</h4>
       <p>${escapeHtml(item.content)}</p>
       <button data-id="${escapeHtml(item.id)}" class="toggle-btn">${item.done?'↩️取消完成':'✅标记完成'}</button>
       <a href="detail.html?id=${encodeURIComponent(item.id)}">去编辑详情</a>
-    </div>
+    </article>
   `).join('')
 
   // 点击完成任务 / 取消完成

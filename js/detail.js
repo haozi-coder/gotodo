@@ -16,12 +16,9 @@ function init(){
   const contentErr = document.querySelector('#editContentErr')
   const detailBox = document.querySelector('#detailBox')
 
-  // 没有 id 或 id 找不到任务时，隐藏编辑表单：
-  // 否则用户能在一个「空表单」里点保存，还会弹出「修改成功」的假提示。
+  // 没有 id 时直接跳回列表页，避免用户看到空的详情页
   function showMissingTask(){
-    form.hidden = true
-    form.style.display = 'none' // 兼容 CSS 里 form{display:flex} 覆盖 hidden 的情况
-    detailBox.innerHTML = '<p class="empty-tip">任务不存在或已被删除，请回到 <a href="list.html">全部任务</a> 重新选择</p>'
+    location.replace('list.html')
   }
 
   // 编辑表单提交（复用统一校验，与新增保持一致）
@@ -66,10 +63,10 @@ function init(){
     titleDom.value = task.title
     contentDom.value = task.content
     detailBox.innerHTML = `
-      <div class="todo-card ${task.done?'done':''}">
+      <article class="todo-card ${task.done?'done':''}">
         <h3>原任务：${escapeHtml(task.title)}</h3>
         <p>${escapeHtml(task.content)}</p>
-      </div>
+      </article>
       <button id="delTaskBtn" type="button" style="margin:10px 0;">删除该任务</button>
     `
 

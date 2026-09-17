@@ -7,7 +7,6 @@ export function renderHeader() {
         <ul class="nav-list">
           <li><a href="./index.html">首页总览</a></li>
           <li><a href="./list.html">全部任务</a></li>
-          <li><a href="./detail.html">任务详情</a></li>
         </ul>
       </nav>
     </header>
@@ -51,6 +50,14 @@ export function validateTodo(title, content) {
     pass = false
   }
   return { pass, titleErr, contentErr }
+}
+
+// ========== 手机号格式校验（中国大陆手机号） ==========
+// 规则：11位数字，1开头，第二位3-9
+export function validatePhone(phone) {
+  if (!phone) return '手机号必填'
+  if (!/^1[3-9]\d{9}$/.test(phone)) return '手机号格式不正确（11位，1开头）'
+  return ''
 }
 
 // ========== 生成唯一 id，避免 Date.now() 快速连点重复 ==========
@@ -206,12 +213,14 @@ async function hashPassword(password, salt){
 }
 
 // 注册用户（密码以加盐哈希存储，不再保存明文）
-export async function registerUser(username, password) {
+export async function registerUser(username, password, phone) {
   const users = getUserList()
   if(users.some(u => u.username === username)) return false //账号已存在
   const salt = genSalt()
   const passwordHash = await hashPassword(password, salt)
-  users.push({username, salt, passwordHash})
+  const userObj = {username, salt, passwordHash}
+  if(phone) userObj.phone = phone // 可选：注册时填写的手机号
+  users.push(userObj)
   localStorage.setItem(USER_LIST_KEY, JSON.stringify(users))
   return true
 }

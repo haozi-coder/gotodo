@@ -18,14 +18,14 @@ function renderList(arr){
   }
 
   container.innerHTML = arr.map(item=>`
-    <div class="todo-card ${item.done?'done':''}">
+    <article class="todo-card ${item.done?'done':''}">
       <h4>${escapeHtml(item.title)}</h4>
       <p>${escapeHtml(item.content)}</p>
       <p>创建：${escapeHtml(item.createTime)}</p>
       <button data-id="${escapeHtml(item.id)}" class="toggle-btn">${item.done?'↩️取消完成':'✅标记完成'}</button>
       <button data-id="${escapeHtml(item.id)}" class="del-btn">删除</button>
       <a href="detail.html?id=${encodeURIComponent(item.id)}">去编辑详情</a>
-    </div>
+    </article>
   `).join('')
 
   // 标记完成 / 取消完成
