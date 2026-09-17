@@ -54,7 +54,7 @@ document.querySelector("#loginForm").onsubmit = function(e){
   e.preventDefault()
   const u = document.querySelector('#username').value.trim()
   const p = document.querySelector('#pwd').value.trim()
-  if(loginUser(u,p)){
+  if(await loginUser(u,p)){
     //登录成功：判断是否新用户，如果没加载示例任务，则生成一次
     createInitTodoForNewUser()
     location.replace("./index.html")
@@ -72,7 +72,7 @@ document.querySelector("#regForm").onsubmit = function(e){
     msgDom.innerText="用户名密码不能为空"
     return
   }
-  if(registerUser(u,p)){
+  if(await registerUser(u,p)){
     msgDom.innerText="注册成功！请登录"
   }else{
     msgDom.innerText="账号已经存在！"

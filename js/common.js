@@ -162,25 +162,79 @@ export function getUserList() {
   return readJson(USER_LIST_KEY, [])
 }
 
-// 注册用户
-export function registerUser(username, password) {
+// ========== 密码加盐哈希（演示级方案） ==========
+// 优先用 Web Crypto 的 SHA-256；非安全上下文（如局域网 IP 访问）下 crypto.subtle
+// 不可用，降级为同步散列。注意：这仍是前端演示级加密，真实系统必须在服务端校验。
+// 生成随机盐
+function genSalt(){
+  const buf = new Uint8Array(16)
+  const wc = globalThis.crypto
+  if(wc && wc.getRandomValues){
+    wc.getRandomValues(buf)
+    return Array.from(buf, b => b.toString(16).padStart(2, '0')).join('')
+  }
+  return Math.random().toString(36).slice(2) + Date.now().toString(36)
+}
+
+// 降级散列：非安全上下文时使用（非加密安全，仅保证不存明文）
+function fallbackHash(text){
+  let h = 0x811c9dc5
+  for(let i = 0; i < text.length; i++){
+    h ^= text.charCodeAt(i)
+    h = Math.imul(h, 16777619)
+  }
+  let h2 = 0x01000193
+  for(let i = 0; i < text.length; i++){
+    h2 = Math.imul(h2 ^ text.charCodeAt(i), 2654435761) >>> 0
+  }
+  return (h >>> 0).toString(16).padStart(8, '0') + h2.toString(16).padStart(8, '0')
+}
+
+// 统一哈希入口：盐和密码一起哈希，同一密码在不同用户下结果不同
+async function hashPassword(password, salt){
+  const text = salt + '::' + password
+  const wc = globalThis.crypto
+  if(wc && wc.subtle && wc.subtle.digest){
+    try{
+      const digest = await wc.subtle.digest('SHA-256', new TextEncoder().encode(text))
+      return Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, '0')).join('')
+    }catch(err){
+      console.warn('Web Crypto 不可用，降级为散列：', err)
+    }
+  }
+  return fallbackHash(text)
+}
+
+// 注册用户（密码以加盐哈希存储，不再保存明文）
+export async function registerUser(username, password) {
   const users = getUserList()
-  const exist = users.find(u => u.username === username)
-  if(exist) return false //账号已存在
-  users.push({username, password})
+  if(users.some(u => u.username === username)) return false //账号已存在
+  const salt = genSalt()
+  const passwordHash = await hashPassword(password, salt)
+  users.push({username, salt, passwordHash})
   localStorage.setItem(USER_LIST_KEY, JSON.stringify(users))
   return true
 }
 
 // 登录校验
-export function loginUser(username, password) {
+export async function loginUser(username, password) {
   const users = getUserList()
-  const u = users.find(item=> item.username === username && item.password === password)
-  if(u){
+  const u = users.find(item => item.username === username)
+  if(!u) return false
+  // 兼容旧版明文账号：校验通过后自动迁移为加盐哈希存储
+  if(typeof u.passwordHash !== 'string'){
+    if(u.password !== password) return false
+    const salt = genSalt()
+    u.salt = salt
+    u.passwordHash = await hashPassword(password, salt)
+    delete u.password
+    localStorage.setItem(USER_LIST_KEY, JSON.stringify(users))
     localStorage.setItem(CURRENT_USER_KEY, username)
     return true
   }
-  return false
+  if(await hashPassword(password, u.salt) !== u.passwordHash) return false
+  localStorage.setItem(CURRENT_USER_KEY, username)
+  return true
 }
 
 // 获取当前登录用户
