@@ -27,13 +27,13 @@ function renderList(arr){
       <h4>${item.title}</h4>
       <p>${item.content}</p>
       <p>创建：${item.createTime}</p>
-      <button data‑id="${item.id}" class="del‑btn">删除</button>
+      <button data-id="${item.id}" class="del-btn">删除</button>
       <a href="detail.html?id=${item.id}">去编辑详情</a>
     </div>
   `).join('')
 
   // 删除按钮事件
-  document.querySelectorAll('.del‑btn').forEach(btn=>{
+  document.querySelectorAll('.del-btn').forEach(btn=>{
     btn.onclick = function(){
       const id = Number(this.dataset.id)
       delTodo(id)
@@ -55,7 +55,7 @@ form.onsubmit = function(e){
   contentErr.textContent = ''
 
   if(title.length <3 || title.length>20){
-    titleErr.textContent = '标题必填，长度3‑20字符'
+    titleErr.textContent = '标题必填,长度3-20字符'
     pass = false
   }
   if(content.length>100){
